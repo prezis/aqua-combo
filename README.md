@@ -7,7 +7,9 @@
 
 ---
 
-aqua-combo orchestrates Claude Code's native features — Plan Mode, subagents with worktree isolation, adversarial debate, and smart clarification — into a single pipeline. It forces you to research before coding, debate before committing, and verify before shipping.
+aqua-combo orchestrates Claude Code's native features — Plan Mode, subagents with worktree isolation, adversarial debate, and smart clarification — into a single pipeline. It forces you to research before coding, debate before committing (in FULL mode), and verify before shipping.
+
+It is a structured planning discipline — a forcing function on thinking — not an autonomous engine. Its value is making you research, clarify, debate, and plan before touching code.
 
 ```
 /aqua-combo "build a notification system with WebSocket + queue"
@@ -54,12 +56,13 @@ aqua-combo orchestrates Claude Code's native features AND installed skills:
 - **Skill routing** — automatically picks the best tool per task
 
 **Skill delegation (auto-detected, fallbacks if not installed):**
-- **`/octo-debate`** in P3 — 3-way AI debate (Claude+Gemini+Codex) instead of Gemini-only
-- **`/octo-plan`** in P4 — multi-AI consensus architecture instead of single-AI
-- **`/octo-deliver`** in P6 — structured multi-AI QA instead of manual review
-- **`/aqua-search`** in P1 — deep research with verification instead of basic search
+- **`/aqua-search`** in P1 — deep research with Czajka formalization + CoVe
+- **`/octo-define`** in P2 — multi-AI consensus on requirements
+- **`/octo-debate`** in P3 — 3-way AI debate (Claude+Gemini+Codex)
+- **`/octo--octopus-architecture`** in P4 — multi-AI architecture design
+- **`/octo--skill-code-review`** + **`/verification-loop`** in P6 — multi-AI review + automated gates
 
-aqua-combo works standalone with built-in fallbacks for every phase. Installing the recommended skills makes each phase significantly stronger.
+aqua-combo works standalone — all phases have built-in fallbacks. The recommended skills make each phase stronger but are not required.
 
 ---
 
