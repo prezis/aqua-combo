@@ -88,6 +88,96 @@ EXAMPLE:
   {paste a similar function from the codebase if available}
 ```
 
+### TypeScript / Node.js Developer
+
+```
+ROLE: TypeScript engineer specializing in {domain — e.g., Next.js API routes, Express middleware, React components}.
+CONTEXT:
+  Project: {project_name} — {one-line description}
+  Current state: {existing modules, tsconfig settings, package manager}
+  Goal: {what the new code must do}
+  Constraints: {strict mode? ESM? Node version?}
+TASK: Implement {module_name} that {specific behavior}. Handle: {edge cases}.
+CONSTRAINTS:
+  - Strict TypeScript — no `any`, no `@ts-ignore` unless justified in comment
+  - {Runtime: Node.js / Deno / Bun / browser}
+  - {Framework patterns: e.g., Next.js App Router conventions, Express middleware signature}
+  - Handle errors with typed error classes or Result types, not bare try/catch
+VERIFY:
+  - `tsc --noEmit` — zero errors
+  - {test command: jest, vitest, playwright} — all pass
+  - No unused imports or variables (`eslint`)
+ANTI-PATTERNS:
+  - NEVER use `any` to silence type errors
+  - NEVER mix CommonJS require with ESM imports
+  - NEVER mutate function arguments
+OUTPUT:
+  - File: {path}
+  - Explicit return types on exported functions
+EXAMPLE:
+  {paste a similar function from the codebase if available}
+```
+
+### Go Developer
+
+```
+ROLE: Go engineer specializing in {domain — e.g., HTTP services, CLI tools, data processing}.
+CONTEXT:
+  Project: {project_name} — {one-line description}
+  Current state: {existing packages, go.mod, entry points}
+  Goal: {what the new code must do}
+  Constraints: {Go version, CGO enabled?, target OS}
+TASK: Implement {package/function} that {specific behavior}. Handle: {edge cases}.
+CONSTRAINTS:
+  - Idiomatic Go — follow Effective Go and Go Code Review Comments
+  - Errors as values — return errors, don't panic (except truly unrecoverable)
+  - Context propagation — accept context.Context as first parameter for cancellable operations
+  - No global mutable state — use dependency injection via struct fields
+VERIFY:
+  - `go build ./...` — zero errors
+  - `go vet ./...` — zero warnings
+  - `go test ./... -race` — all pass, no race conditions
+ANTI-PATTERNS:
+  - NEVER ignore returned errors (use `errcheck` or `golangci-lint`)
+  - NEVER use `init()` for complex initialization
+  - NEVER use `interface{}` / `any` when a concrete type is known
+OUTPUT:
+  - File: {path}
+  - Exported functions have doc comments
+EXAMPLE:
+  {paste a similar function from the codebase if available}
+```
+
+### Rust Developer
+
+```
+ROLE: Rust engineer specializing in {domain — e.g., async services, CLI tools, WASM}.
+CONTEXT:
+  Project: {project_name} — {one-line description}
+  Current state: {existing crates, Cargo.toml, workspace structure}
+  Goal: {what the new code must do}
+  Constraints: {edition, async runtime (tokio/async-std), no_std?}
+TASK: Implement {module} that {specific behavior}. Handle: {edge cases}.
+CONSTRAINTS:
+  - Use Result<T, E> for fallible operations — no unwrap() in library code
+  - Lifetime annotations only where compiler requires them
+  - Prefer owned types at API boundaries, borrows internally
+  - {Async: use tokio::spawn for concurrent tasks, not threads}
+VERIFY:
+  - `cargo build` — zero errors, zero warnings
+  - `cargo clippy` — zero warnings
+  - `cargo test` — all pass
+ANTI-PATTERNS:
+  - NEVER use unwrap() or expect() in production code paths
+  - NEVER clone() to satisfy the borrow checker without understanding why
+  - NEVER use unsafe without a SAFETY comment explaining the invariant
+OUTPUT:
+  - File: {path}
+  - Doc comments on public items
+EXAMPLE:
+  {paste a similar function from the codebase if available}
+```
+
 ### Test Writer
 
 ```
