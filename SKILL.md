@@ -62,6 +62,11 @@ aqua-combo works standalone but is SIGNIFICANTLY better with these skills instal
 | `/octo-plan` | P4 Architect | Multi-AI consensus planning | Single-AI Plan Mode |
 | `/octo-deliver` | P6 Review | Structured multi-AI QA pipeline | Manual review checklist |
 | `/aqua-search` | P1 Research | Deep research with CoVe + reranking | Basic WebSearch fallback |
+| `/octo-define` | P2 Clarify | Multi-AI consensus on problem definition | Single-AI clarification |
+| `/octo--octopus-architecture` | P4 Architect | Architecture-specific multi-AI design | `/octo-plan` or native Plan Mode |
+| `/superpowers--subagent-driven-development` | P5 Dispatch | Purpose-built plan execution with agents | Manual dispatch |
+| `/superpowers--dispatching-parallel-agents` | P5 Dispatch | Parallel agent dispatch with isolation | Sequential dispatch |
+| `/superpowers--verification-before-completion` | P6 Review | Evidence-based completion verification | Self-assessment only |
 | `/code-review` | P6 Review | Expert code review | Generic reviewer agent |
 | `/security-review` | P6 Review | Security vulnerability scan | Generic security agent |
 
@@ -114,7 +119,9 @@ Delegate to `/aqua-search` if available. Otherwise:
 
 ## Phase 2: CLARIFY (user interaction)
 
-This is the "interview me" pattern from Claude Code best practices. Don't just ask what the user wants — ask what they HAVEN'T thought of.
+If `/octo-define` is installed, invoke it — multi-AI consensus on problem scoping produces sharper definitions than single-AI. Pass P1 research findings as context.
+
+**Fallback (no octo-define):** the "interview me" pattern from Claude Code best practices. Don't just ask what the user wants — ask what they HAVEN'T thought of.
 
 1. Present research summary (3-5 bullets, not a wall)
 2. Ask **3-5 targeted questions** — SMART, informed by P1 findings:
@@ -203,8 +210,9 @@ If CONFIDENCE = LOW → return to P2 with follow-up questions (max 2 loops, then
 
 ### Preferred: delegate to installed planning skill
 
-If `/octo-plan` or similar multi-AI planning skill is installed, invoke it:
-- It uses multi-AI consensus (Claude + Gemini + Codex) for stronger architectural decisions
+If `/octo--octopus-architecture` is installed, invoke it — it's architecture-specific multi-AI design (stronger than generic planning for system design decisions).
+
+Otherwise if `/octo-plan` is installed, invoke it — multi-AI consensus planning:
 - Pass: research findings (P1) + refined problem (P2) + debate conclusions (P3)
 - Let the planning skill produce the architecture and trade-off analysis
 
@@ -249,6 +257,12 @@ Write plan to `aqua-combo-plan-{topic-slug}.md`. Review it before proceeding (op
 ---
 
 ## Phase 5: DISPATCH
+
+If `/superpowers--subagent-driven-development` is installed, invoke it — it's purpose-built for executing implementation plans with independent agent tasks. Pass the plan file.
+
+If `/superpowers--dispatching-parallel-agents` is installed, it handles parallel dispatch with isolation and verification automatically.
+
+**Fallback (no superpowers skills):** manual dispatch as described below.
 
 ### User confirmation gate (MANDATORY):
 
@@ -340,6 +354,8 @@ After all agents complete:
 If `/octo-deliver` is installed, invoke it — it provides multi-AI quality assurance with structured gates. Pass the plan file and list of changed files.
 
 If `/octo-staged-review` is installed, invoke it — it runs two-stage review (spec compliance → code quality) automatically.
+
+If `/superpowers--verification-before-completion` is installed, invoke it — it enforces evidence-based completion: run verification commands and confirm output BEFORE claiming success.
 
 ### Fallback: manual review checklist
 
