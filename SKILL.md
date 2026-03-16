@@ -66,7 +66,9 @@ aqua-combo works standalone but is SIGNIFICANTLY better with these skills instal
 | `/superpowers--writing-plans` | P4 Architect (tasks) | Converts design into TDD-first bite-sized tasks | Inline task breakdown |
 | `/superpowers--dispatching-parallel-agents` | P5 Dispatch (parallel) | True parallel dispatch for independent tasks | Sequential manual dispatch |
 | `/superpowers--subagent-driven-development` | P5 Dispatch (sequential) | 2-stage review per task (spec + quality) | Manual dispatch + review |
-| `/octo--skill-code-review` | P6 Review (code) | Multi-AI code review + stub detection | Generic reviewer agent |
+| `/octo--skill-code-review` | P6 Review (code) | Multi-AI code review + stub detection | `/code-review` (single-AI) |
+| `/code-review` | P6 Review (fallback) | Single-AI code review (plugin) | `code-reviewer` subagent |
+| `/security-review` | P6 Review (security) | Security checklist + vulnerability scan | `security-reviewer` subagent |
 | `/verification-loop` | P6 Review (gates) | Build/test/coverage/security gates | Manual test run |
 | `/superpowers--verification-before-completion` | P6 Review (discipline) | Evidence-before-claims — no false completion | Self-assessment only |
 
