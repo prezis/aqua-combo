@@ -35,27 +35,27 @@ FEW-SHOT EXAMPLE:
 ### 1. Backend Developer (Python, async, DB)
 
 ```
-ROLE: Python backend engineer specializing in async/await patterns, aiohttp/httpx clients, and SQLite/WAL database access on Linux.
+ROLE: Python backend engineer specializing in {domain — e.g., async/await patterns, REST APIs, data processing}.
 CONTEXT_BLOCK:
   Project: {project_name} — {one-line description}
   Current state: {existing modules, DB schema, entry points}
   Goal: {what the new code must do, with measurable outcome}
-  Constraints: {Decimal(str(value)) always, max memory, API rate limits}
+  Constraints: {project-specific constraints — e.g., max memory, API rate limits}
 TASK: Implement {module_name} that {specific behavior}. Must handle {edge cases}.
 CONSTRAINTS:
-  - Use Decimal(str(value)) for ALL numeric conversions — NEVER float
-  - async def for any I/O-bound function
-  - All DB writes inside `async with aiosqlite.connect(...) as db:` with WAL mode
+  - {DB access pattern — e.g., async with aiosqlite, SQLAlchemy session, Prisma client}
+  - {Numeric precision — e.g., Decimal(str(value)) for financial data, or float if precision is not critical}
   - No global mutable state — pass config via dataclass or dict
+  - {Async pattern if applicable — e.g., async def for I/O-bound functions}
 VERIFICATION:
   - python -m py_compile {file} — zero errors
   - pytest {test_file} -v — all green
-  - Manual: call main function with sample input, check DB row created
+  - Manual: call main function with sample input, check expected output
 ANTI-PATTERNS:
-  - NEVER use float for financial values
   - NEVER swallow exceptions with bare `except:`
-  - NEVER hardcode API keys — read from .env
-  - NEVER use time.sleep() in async code — use asyncio.sleep()
+  - NEVER hardcode API keys — read from .env or config
+  - {Domain-specific: e.g., NEVER use float for financial values}
+  - {Async-specific: e.g., NEVER use time.sleep() in async code}
 OUTPUT FORMAT:
   - Single file: {path}
   - Type hints on all function signatures
@@ -146,7 +146,7 @@ OUTPUT FORMAT:
 ### 5. Data Pipeline Builder
 
 ```
-ROLE: Data engineer building ETL pipelines in Python with async HTTP fetching, JSON parsing, and SQLite storage.
+ROLE: Data engineer building ETL pipelines in Python with {transport — e.g., async HTTP, message queue, file reader} and {storage — e.g., PostgreSQL, SQLite, S3, BigQuery}.
 CONTEXT_BLOCK:
   Project: {project_name}
   Data source: {API endpoint, format, rate limits}
@@ -155,17 +155,17 @@ CONTEXT_BLOCK:
 TASK: Build pipeline that fetches from {source}, transforms to {schema}, loads into {table}. Must handle: pagination, rate limits, partial failures.
 CONSTRAINTS:
   - Checkpoint progress — resumable after crash
-  - Use Decimal(str(value)) for all numeric fields
+  - {Numeric precision — e.g., Decimal(str(value)) for financial data, or native types if precision is not critical}
   - Respect rate limits: {X} requests per second max
   - Cache raw responses in {cache_dir}
 VERIFICATION:
   - Dry run with limit=10 produces correct rows
   - Interrupt mid-run, restart — no duplicates, no data loss
-  - Check Decimal precision: no floating point artifacts
+  - {Precision check if applicable — e.g., verify no floating point artifacts}
 ANTI-PATTERNS:
   - NEVER load all data into memory — stream/paginate
   - NEVER skip error handling on individual records — log and continue
-  - NEVER use float for financial amounts
+  - {Domain-specific: e.g., NEVER use float for financial amounts}
 OUTPUT FORMAT:
   - Single file: {path}
   - Functions: fetch(), transform(), load(), run_pipeline()
@@ -198,25 +198,25 @@ OUTPUT FORMAT:
 ### 7. DevOps / Deployment
 
 ```
-ROLE: Linux sysadmin managing tmux-based services on the project's deployment machine.
+ROLE: DevOps engineer deploying services on {platform — e.g., Linux server, Docker, Kubernetes, serverless}.
 CONTEXT_BLOCK:
   Project: {project_name}
-  Services: {list of running processes, their tmux windows}
+  Services: {list of running processes and their management — e.g., tmux windows, Docker containers, systemd units, PM2 apps}
   Resources: {current RAM usage, disk, API key count}
 TASK: {Deploy new service / update existing / set up monitoring}
 CONSTRAINTS:
-  - Max 3-4 tmux workers total (check available RAM)
-  - Services must auto-recover (bash loop or systemd)
+  - Max concurrent workers: {N} (check available RAM: `free -h` on Linux, `vm_stat` on macOS)
+  - Services must auto-recover ({mechanism — e.g., systemd restart, Docker restart policy, PM2 watch, bash loop})
   - Logs to file, not just stdout
-  - PID tracking for clean shutdown
+  - Process tracking for clean shutdown ({PID files, Docker container names, PM2 IDs})
 VERIFICATION:
   - Service starts and stays running for 60 seconds
   - Log file populated with expected output
-  - RAM usage within budget (check with `free -h`)
+  - Resource usage within budget
 ANTI-PATTERNS:
-  - NEVER run without PID file — orphan processes are invisible
+  - NEVER run without process tracking — orphan processes are invisible
   - NEVER skip log rotation — disk fills up
-  - NEVER assume service will stay up — always add restart loop
+  - NEVER assume service will stay up — always add restart/recovery mechanism
 OUTPUT FORMAT:
   - Script: {path}
   - Config: {path}
@@ -229,7 +229,7 @@ OUTPUT FORMAT:
 
 ### 1. Specificity beats length
 Bad: "Write good Python code for handling data."
-Good: "Write an async function `fetch_pool_data(pool_address: str) -> dict` that calls Shyft GraphQL, returns parsed position data, retries 3x on timeout."
+Good: "Write an async function `fetch_user_orders(user_id: str) -> list[dict]` that calls the Orders API, returns parsed order data, retries 3x on timeout, and raises `OrderFetchError` on 4xx responses."
 
 ### 2. Context from research > generic instructions
 Fill CONTEXT_BLOCK with actual findings from P1-P2 research. A prompt with real file paths, real function names, and real constraints outperforms a generic one every time.

@@ -10,7 +10,7 @@
 aqua-combo replaces the manual cycle of research, debate, architecture review, and implementation with a single command. It runs a 10-phase pipeline that researches your problem, stress-tests the approach through adversarial debate, designs the architecture, crafts context-rich prompts for sub-agents, simulates execution, and dispatches the work -- all automatically.
 
 ```
-/aqua-combo "build a wallet scoring system"
+/aqua-combo "build a notification system with WebSocket + queue"
 ```
 
 ---
@@ -28,7 +28,7 @@ aqua-combo replaces the manual cycle of research, debate, architecture review, a
 |  +----+----+   +----+-----+   +----+-----+              |
 |       |              |              |                    |
 |  P1(Q)->P8(mini) P1->P2->P5->  ALL P1-P10              |
-|                  P6->P8->P10                            |
+|                  P6->P7L->P8->P10                       |
 |                                                         |
 |  Phases:                                                |
 |  P1 Research -> P2 Clarification -> P3 Adversarial      |
@@ -45,7 +45,7 @@ aqua-combo replaces the manual cycle of research, debate, architecture review, a
 | Mode | Phases | When to use |
 |------|--------|-------------|
 | **SCOUT** | P1 (quick) -> P8 (mini) | Simple task, known pattern, <50 LOC |
-| **STANDARD** | P1 -> P2 -> P5 -> P6 -> P8 -> P10 | New feature, moderate complexity |
+| **STANDARD** | P1 -> P2 -> P5 -> P6 -> P7(lite) -> P8 -> P10 | New feature, moderate complexity |
 | **FULL** | All P1 through P10 | Architecture decisions, high stakes, multi-agent, production |
 
 The mode is auto-detected based on complexity, but you can override it:
@@ -72,7 +72,9 @@ The mode is auto-detected based on complexity, but you can override it:
 | **P9** | Learning Loop | Capture what worked for future runs |
 | **P10** | Auto-Dispatch | Launch sub-agents with two-stage review and conflict detection |
 
-Each phase builds on the previous. Five mandatory ULTRATHINK checkpoints ensure deep reasoning at critical gates.
+Each phase builds on the previous. Six mandatory ULTRATHINK checkpoints ensure deep reasoning at critical gates.
+
+> **What is ULTRATHINK?** A structured deep-reasoning step where the AI pauses to think thoroughly before proceeding. Each ULTRATHINK checkpoint produces a written output — not just "I thought about it" but a concrete synthesis, decision, or analysis that subsequent phases build on.
 
 ---
 
@@ -133,6 +135,16 @@ aqua-combo/
 - **No generic prompts** -- every sub-agent prompt includes specific context from P1-P5.
 - **Simplest architecture wins** -- complexity is not a feature.
 - **Two-stage review** -- every agent output is reviewed for spec compliance, then code quality.
+
+---
+
+## Important Notes
+
+**Agent dispatch (P10):** In STANDARD and FULL modes, the pipeline dispatches sub-agents that create and modify files in your project. Before dispatch, the skill presents a confirmation gate listing all tasks and asking for your approval. Agents run in default permission mode unless you explicitly opt in to `bypassPermissions` at the confirmation gate.
+
+**Skill integration:** P6 and P10 automatically leverage installed Claude Code skills when available (e.g., `/code-review`, `/security-review`, `/tdd`). If no specialized skills are installed, it falls back to generic reviewer agents using the templates in `references/prompt_templates.md`.
+
+**Web research safety:** P1 research may pull content from web sources. The skill includes guidance to summarize and paraphrase web content rather than copy-pasting raw text into agent prompts, reducing prompt injection risk.
 
 ---
 

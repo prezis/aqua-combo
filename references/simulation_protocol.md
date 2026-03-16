@@ -68,16 +68,16 @@ Walk through ALL steps sequentially. At each step, ask:
 |---------|-----------|------------|
 | Wrong output | Verification criteria fail | Retry with more specific prompt + error feedback |
 | Context exceeded | Token limit error | Split task into smaller chunks, compress context |
-| Hangs / no response | Timeout >15min | Kill agent, restart with same task |
+| Hangs / no response | Timeout >10min | Kill agent, restart with same task |
 | Produces extra files | File count check | Delete unexpected files, re-run with stricter OUTPUT FORMAT |
 
 ### System Failures
 | Failure | Detection | Mitigation |
 |---------|-----------|------------|
-| OOM (out of memory) | Process killed / free -h | Reduce concurrent agents (check `free -h`) |
-| Dependency missing | ImportError | pip install check before run, requirements.txt |
+| OOM (out of memory) | Process killed | Reduce concurrent agents (check available RAM) |
+| Dependency missing | ImportError / ModuleNotFoundError | Check requirements before run |
 | File conflict | Git merge conflict | git stash before, verify after, manual resolve |
-| Tmux session lost | tmux ls empty | Auto-recovery script, PID files for restart |
+| Process manager lost | Session/container gone | Auto-recovery via process manager restart policy |
 
 ---
 
@@ -105,7 +105,7 @@ Walk through ALL steps sequentially. At each step, ask:
 
 | Resource | Limit | Check Command |
 |----------|-------|---------------|
-| RAM | Check available with `free -h` | `free -h` |
+| RAM | Check available memory | Linux: `free -h`, macOS: `vm_stat`, Windows/WSL: `free -h` |
 | Concurrent agents | 3-4 max (OS overhead) | `ps aux \| grep agent` |
 | Heavy API agents | 1 rate-limited agent at a time | Track in session state |
 | Context window per agent | ~200K tokens | Monitor prompt size |
@@ -132,4 +132,4 @@ SIMULATION RESULT: PASS / FAIL
   GO / NO-GO: {decision}
 ```
 
-Only proceed to P8 (execution) when simulation result is PASS.
+Only proceed to P8 (Final Plan) when simulation result is PASS.
