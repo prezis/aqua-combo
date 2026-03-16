@@ -140,3 +140,112 @@ Add 20% buffer. If total >60 min, consider splitting into sessions.
 ```
 
 This is why worktree isolation is the single most important dispatch feature. It makes rollback free and conflict-free.
+
+---
+
+## Recommended Hooks for aqua-combo
+
+These hooks convert soft (LLM-enforced) gates into hard (deterministic) gates.
+
+### Notification (alert when pipeline needs input)
+
+Add to `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "Notification": [{
+      "matcher": "",
+      "hooks": [{
+        "type": "command",
+        "command": "notify-send 'aqua-combo' 'Pipeline needs your attention'"
+      }]
+    }]
+  }
+}
+```
+
+### Stop hook (enforce all phases ran)
+
+A prompt-based Stop hook that checks pipeline completion before declaring done:
+
+```json
+{
+  "hooks": {
+    "Stop": [{
+      "matcher": "",
+      "hooks": [{
+        "type": "prompt",
+        "prompt": "Before completing: verify that for the selected aqua-combo mode, all required phases produced output. Check for: P1 research verdict, P2 refined problem (if STANDARD/FULL), P4 plan file, P5 dispatch confirmation, P6 review scores (if STANDARD/FULL). If any required phase was skipped, do NOT stop — complete the missing phase first."
+      }]
+    }]
+  }
+}
+```
+
+### PreToolUse hook (no building without plan)
+
+Enforce Iron Law #1 — block Write/Edit to implementation files if no plan file exists:
+
+```bash
+#!/bin/bash
+# scripts/enforce-plan-first.sh
+# Exit 0 = allow, Exit 2 = block
+
+INPUT=$(cat)
+TOOL=$(echo "$INPUT" | jq -r '.tool_name // empty')
+
+# Only check Write and Edit tools
+if [ "$TOOL" != "Write" ] && [ "$TOOL" != "Edit" ]; then
+  exit 0
+fi
+
+# Allow writes to plan files, skill files, config files
+FILE=$(echo "$INPUT" | jq -r '.tool_input.file_path // .tool_input.filePath // empty')
+if echo "$FILE" | grep -qE '(aqua-combo-plan|SKILL\.md|settings\.json|\.claude/|references/)'; then
+  exit 0
+fi
+
+# Block if no plan file exists
+if ! ls aqua-combo-plan-*.md 1>/dev/null 2>&1; then
+  echo "Blocked: No aqua-combo plan file found. Run the research and planning phases first (Iron Law #1)." >&2
+  exit 2
+fi
+
+exit 0
+```
+
+Configure in settings:
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Write|Edit",
+      "hooks": [{
+        "type": "command",
+        "command": "./scripts/enforce-plan-first.sh"
+      }]
+    }]
+  }
+}
+```
+
+### SubagentStop hook (auto-report progress)
+
+Log when dispatched agents complete:
+
+```json
+{
+  "hooks": {
+    "SubagentStop": [{
+      "matcher": "",
+      "hooks": [{
+        "type": "command",
+        "command": "notify-send 'aqua-combo' 'Agent completed a task'"
+      }]
+    }]
+  }
+}
+```
+
+These hooks are optional — aqua-combo works without them. But they prevent the most common failure: Claude silently skipping phases or building without a plan.

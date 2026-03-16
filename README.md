@@ -63,6 +63,19 @@ aqua-combo works standalone with built-in fallbacks for every phase. Installing 
 
 ---
 
+## Optional: hooks for hard gates
+
+aqua-combo's quality gates are LLM-enforced by default. For production use, add deterministic hooks that make gates unbypassable:
+
+- **Notification hook** — desktop alert when pipeline needs your input (long phases)
+- **Stop hook** — verify all required phases ran before declaring complete
+- **PreToolUse hook** — block file edits until a plan file exists (Iron Law #1)
+- **SubagentStop hook** — auto-notify when dispatched agents finish
+
+See `references/context_protocol.md` for ready-to-paste hook configurations.
+
+---
+
 ## Important notes
 
 **Agent dispatch (P5):** Before launching agents, the skill presents a confirmation gate listing all tasks. Agents run in default permission mode unless you explicitly opt in to auto-accept.

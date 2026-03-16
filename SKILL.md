@@ -400,7 +400,53 @@ Context is your #1 resource. `/clear` > `/compact` for phase transitions. Each p
 
 **Use `/compact` only:** within a single long-running phase (e.g., P1 reading many files), or in SCOUT mode (too short for /clear).
 
+**Alternative to `/compact`:** use `Esc+Esc` → "Summarize from here" in the rewind menu. This compresses only messages from a selected point, keeping earlier context intact — more precise than `/compact`.
+
 **Subagent context:** Each dispatched agent runs in its OWN context window + its own worktree. Their verbose output stays there — only summaries return to your main conversation.
+
+---
+
+## Hooks: Hard Gates (optional but recommended)
+
+aqua-combo's Iron Laws are LLM-enforced (soft). Hooks make them **deterministic** (hard). Add these to `~/.claude/settings.json` or `.claude/settings.json`:
+
+### Notification hook — know when pipeline needs you
+
+Long phases (P1 research, P5 dispatch) can take minutes. Get a desktop alert when Claude needs input:
+
+```json
+{
+  "hooks": {
+    "Notification": [{
+      "matcher": "",
+      "hooks": [{
+        "type": "command",
+        "command": "notify-send 'aqua-combo' 'Pipeline needs your attention'"
+      }]
+    }]
+  }
+}
+```
+(Linux/WSL2. For macOS: use `osascript -e 'display notification...'`)
+
+### /rewind as escape hatch
+
+If any phase goes wrong, don't fight it — rewind:
+
+| Situation | Action |
+|-----------|--------|
+| P3 debate reveals approach is wrong | `Esc+Esc` → rewind to pre-P3 → re-run with adjusted direction |
+| P5 agents produce garbage | `Esc+Esc` → rewind to post-P4 (plan approved) → re-dispatch |
+| Phase running too long | `Esc` to stop → redirect or `/rewind` |
+| Lost track of pipeline state | `Esc+Esc` → "Summarize from here" to compress without losing state |
+
+### /btw for side questions during long phases
+
+During P5 dispatch (agents running), use `/btw` for quick questions without polluting context:
+- `/btw what was the confidence level from P3?`
+- `/btw which files did the plan say to modify?`
+
+`/btw` answers from current context, doesn't enter history, and has no tool access.
 
 ---
 
