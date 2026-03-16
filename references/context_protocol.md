@@ -4,14 +4,44 @@ Context is your most important resource. Claude Code performance degrades as con
 
 ---
 
-## Context Cleanup Schedule
+## Context Strategy: Save-State + /clear > /compact
 
-| After Phase | Action | Command | Why |
-|-------------|--------|---------|-----|
-| P1 Research | Compact | `/compact Focus on research conclusions, verdict, and key findings` | Raw search results are verbose |
-| P3 Debate | Compact | `/compact Focus on debate direction, risks, and adjusted approach` | Debate transcript is long |
-| Before P5 | Compact | `/compact Focus on the plan and execution steps` | Free max context for dispatch |
-| Between unrelated tasks | Clear | `/clear` | Fresh context = better output |
+The official Claude Code docs say performance degrades as context fills. For a multi-phase pipeline, the optimal strategy is:
+
+### Between major phases: save state to plan file → /clear
+
+Each phase produces a concrete artifact. The next phase only needs that artifact, not the full conversation history. A fresh context window gives maximum quality.
+
+| Phase transition | Action | State preserved in |
+|-----------------|--------|-------------------|
+| After P1 Research | Write findings to plan file → `/clear` | `aqua-combo-plan-*.md` (Research Verdict section) |
+| After P2 Clarify | Append refined problem to plan file → `/clear` | Plan file (Summary + Constraints section) |
+| After P3 Debate | Append debate conclusions to plan file → `/clear` | Plan file (Risk Register + Direction section) |
+| After P4 Architect | Plan file is now complete → `/clear` | Plan file IS the state — it has everything P5 needs |
+| After P5 Dispatch | Agent outputs in worktrees → `/clear` | Worktree branches + plan file |
+| After P6 Review | Final result | Merged code + plan file as record |
+
+### Why /clear beats /compact for pipelines:
+
+- **`/compact`**: compresses context but keeps conversation going. Good for single-task sessions. Risk: compression loses important details, especially code snippets and exact findings.
+- **`/clear`**: completely fresh context. Perfect when state is externalized to a file. Each phase starts at 0% context usage = maximum model performance.
+- **Save-state + `/clear`**: write phase output to plan file, clear context, read plan file at start of next phase. Zero compression artifacts.
+
+### When to use /compact instead:
+
+- Within a single phase that's running long (e.g., P1 research reading many files)
+- When you don't want to break the conversation flow
+- For SCOUT mode (too short to warrant /clear)
+
+### Emergency: context at 70-80%
+
+If context reaches 70-80% during any phase:
+1. Save current progress to plan file
+2. `/clear`
+3. Read plan file to resume
+4. Continue the current phase
+
+Don't wait for auto-compaction at 95% — by then performance has already degraded.
 
 ## Why Subagents + Worktrees Matter for Context
 

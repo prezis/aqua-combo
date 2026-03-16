@@ -44,13 +44,22 @@ Override: `/aqua-combo --mode full "redesign the auth system"`
 
 ## How it uses Claude Code
 
-aqua-combo builds on Claude Code's native capabilities:
+aqua-combo orchestrates Claude Code's native features AND installed skills:
 
-- **Plan Mode** (P4) — `Shift+Tab` for read-only exploration and planning. `Ctrl+G` to edit plans in your editor.
-- **Subagents** (P5-P6) — dispatched with `isolation: worktree` so each agent works in its own branch. No file conflicts, clean rollback.
-- **`ultrathink` keyword** — triggers high-effort reasoning at 5 decision gates (Opus 4.6 / Sonnet 4.6).
-- **Context management** — `/compact` between phases to prevent context window degradation.
-- **Skill routing** — automatically uses installed skills (`/code-review`, `/security-review`, `/tdd`) when available.
+**Native features:**
+- **Plan Mode** (P4) — `Shift+Tab` for read-only architecture planning
+- **Subagents with worktree isolation** (P5) — each agent works in its own git branch
+- **`ultrathink` keyword** — triggers high-effort reasoning at 5 decision gates
+- **Save-state + `/clear`** — fresh context between phases for maximum quality
+- **Skill routing** — automatically picks the best tool per task
+
+**Skill delegation (auto-detected, fallbacks if not installed):**
+- **`/octo-debate`** in P3 — 3-way AI debate (Claude+Gemini+Codex) instead of Gemini-only
+- **`/octo-plan`** in P4 — multi-AI consensus architecture instead of single-AI
+- **`/octo-deliver`** in P6 — structured multi-AI QA instead of manual review
+- **`/aqua-search`** in P1 — deep research with verification instead of basic search
+
+aqua-combo works standalone with built-in fallbacks for every phase. Installing the recommended skills makes each phase significantly stronger.
 
 ---
 

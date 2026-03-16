@@ -50,6 +50,34 @@ At invocation, classify the task (ultrathink):
 
 ---
 
+## Dependency Check (runs at invocation)
+
+aqua-combo works standalone but is SIGNIFICANTLY better with these skills installed. At invocation, check what's available and adapt:
+
+### Recommended skills (check with `/` menu):
+
+| Skill | Used in | What it adds | Without it |
+|-------|---------|-------------|------------|
+| `/octo-debate` | P3 Debate | 3-way AI debate (Claude+Gemini+Codex) | Single Gemini or web fallback |
+| `/octo-plan` | P4 Architect | Multi-AI consensus planning | Single-AI Plan Mode |
+| `/octo-deliver` | P6 Review | Structured multi-AI QA pipeline | Manual review checklist |
+| `/aqua-search` | P1 Research | Deep research with CoVe + reranking | Basic WebSearch fallback |
+| `/code-review` | P6 Review | Expert code review | Generic reviewer agent |
+| `/security-review` | P6 Review | Security vulnerability scan | Generic security agent |
+
+### Auto-adaptation:
+- If a recommended skill is installed → use it (no user prompt needed)
+- If not installed → use fallback (documented in each phase)
+- **Never block the pipeline** because a skill is missing — always have a fallback path
+
+### Suggest installation:
+If running in FULL mode and key skills are missing, suggest once:
+> "For better results, consider installing: [missing skills]. Run `/find-skills` to browse available skills, or install from the skill's repo."
+
+Do not repeat this suggestion — one mention per session is enough.
+
+---
+
 ## SCOUT Mode
 
 For simple tasks where you know HOW, just need to organize:
@@ -80,7 +108,7 @@ Delegate to `/aqua-search` if available. Otherwise:
 
 **ultrathink gate #1:** Synthesize findings. What's the most important thing we learned?
 
-**Context cleanup:** After summarizing, run `/compact Focus on research conclusions` to free context from raw search results.
+**Context cleanup:** Write research findings to the plan file (`aqua-combo-plan-*.md`, Research Verdict section) → `/clear`. Next phase reads the plan file to continue.
 
 ---
 
@@ -110,7 +138,15 @@ Pick from:
 
 Stress-test the approach before committing.
 
-### Gemini path (preferred):
+### Preferred: delegate to installed debate skill
+
+If `/octo-debate` or similar multi-AI debate skill is installed, invoke it:
+- It runs 3-way debate (Claude + Gemini + Codex) which is more thorough than single-AI
+- Pass the topic: research summary from P1 + refined problem from P2 + proposed approach
+- Let the debate skill handle the adversarial process
+
+### Fallback: Gemini CLI (if no debate skill available)
+
 ```bash
 command -v gemini && printf '%s' "You are a senior engineer reviewing a proposed approach.
 CONTEXT: [P1 research summary]
@@ -127,7 +163,7 @@ Play DEVIL'S ADVOCATE:
 > **Note:** The Gemini path sends your research context to Google's API. Do not include
 > private credentials, internal API keys, or sensitive architectural details in the prompt.
 
-### Fallback (no Gemini):
+### Last resort: web skepticism (no Gemini, no debate skill)
 WebSearch: `"[topic] problems site:reddit.com"`, `"[topic] pitfalls site:news.ycombinator.com"`
 
 ### 4-Perspective Synthesis:
@@ -165,7 +201,16 @@ If CONFIDENCE = LOW → return to P2 with follow-up questions (max 2 loops, then
 
 ## Phase 4: ARCHITECT
 
-**Enter Plan Mode** — use `Shift+Tab` or `--permission-mode plan`. In Plan Mode, Claude reads and plans without making changes.
+### Preferred: delegate to installed planning skill
+
+If `/octo-plan` or similar multi-AI planning skill is installed, invoke it:
+- It uses multi-AI consensus (Claude + Gemini + Codex) for stronger architectural decisions
+- Pass: research findings (P1) + refined problem (P2) + debate conclusions (P3)
+- Let the planning skill produce the architecture and trade-off analysis
+
+### Fallback: native Plan Mode
+
+**Enter Plan Mode** — use `Shift+Tab` or start with `--permission-mode plan`. In Plan Mode, Claude reads and plans without making changes.
 
 ### Deliverables:
 1. **Component diagram** (ASCII or Mermaid)
@@ -197,7 +242,7 @@ Write plan to `aqua-combo-plan-{topic-slug}.md`. Use `Ctrl+G` to open in editor 
 ## Rollback — how to undo (git checkout/stash/worktree remove)
 ```
 
-**Context cleanup:** `/compact Focus on the plan and execution steps` before dispatch.
+**Context cleanup:** Plan file is now complete — it has everything P5 needs → `/clear`. P5 reads the plan file to dispatch.
 
 **Exit Plan Mode** before proceeding to P5 — press `Shift+Tab` twice (Plan Mode → Auto-Accept → Normal) or just `Shift+Tab` once to toggle. Agents cannot be dispatched from Plan Mode.
 
@@ -290,20 +335,27 @@ See `references/prompt_templates.md` for domain-specific templates.
 
 After all agents complete:
 
-1. **Spec compliance** — does output match the plan?
+### Preferred: delegate to installed delivery/review skill
+
+If `/octo-deliver` is installed, invoke it — it provides multi-AI quality assurance with structured gates. Pass the plan file and list of changed files.
+
+If `/octo-staged-review` is installed, invoke it — it runs two-stage review (spec compliance → code quality) automatically.
+
+### Fallback: manual review checklist
+
+1. **Spec compliance** — check each step's Test Criteria from the P4 plan:
    - Use `/code-review` skill if installed
    - Or dispatch `code-reviewer` subagent (see `references/subagent_definitions.md`)
 
-2. **Security + quality** — vulnerabilities, edge cases, code smells?
+2. **Security + quality** — vulnerabilities, edge cases, code smells:
    - Use `/security-review` skill if installed
    - Or dispatch `security-reviewer` subagent
 
-**No skills or agents installed?** Fallback: ask Claude directly in the main conversation:
+3. **Integration check** — run your project's test command (`npm test`, `pytest`, `cargo test`, `go test ./...`, etc.) and check for cross-agent conflicts
+
+**No skills or agents installed?** Ask Claude directly in the main conversation:
 - "Review the changes in [files] for spec compliance against the plan"
 - "Check [files] for security issues, especially [concerns from P3]"
-This is less thorough than dedicated reviewers but better than skipping P6 entirely.
-
-3. **Integration check** — run your project's test command (`npm test`, `pytest`, `cargo test`, `go test ./...`, etc.) and check for cross-agent conflicts
 
 **ultrathink gate #5:** "Do outputs collectively satisfy the plan? Any gaps?"
 
@@ -332,15 +384,21 @@ If review fails: `git worktree remove` discards everything cleanly.
 
 ## Context Management Protocol
 
-Context is your #1 resource. The official Claude Code docs say: "performance degrades as context fills." This pipeline is context-hungry — manage it aggressively.
+Context is your #1 resource. `/clear` > `/compact` for phase transitions. Each phase produces a concrete artifact (the plan file) — the next phase only needs that, not the full conversation history.
 
-| When | Action | Why |
-|------|--------|-----|
-| After P1 research | `/compact Focus on research conclusions` | Raw search results no longer needed |
-| After P2 clarify | Nothing — user answers are small | — |
-| After P3 debate | `/compact Focus on debate conclusions and direction` | Debate transcript is verbose |
-| Before P5 dispatch | `/compact Focus on the plan and execution steps` | Free maximum context for agent management |
-| Between unrelated tasks | `/clear` | Fresh context = better performance |
+| Phase transition | Action | State preserved in |
+|-----------------|--------|-------------------|
+| After P1 Research | Write findings to plan file → `/clear` | Plan file (Research Verdict section) |
+| After P2 Clarify | Append refined problem to plan file → `/clear` | Plan file (Summary + Constraints) |
+| After P3 Debate | Append debate conclusions to plan file → `/clear` | Plan file (Risk Register + Direction) |
+| After P4 Architect | Plan file is now complete → `/clear` | Plan file IS the state |
+| After P5 Dispatch | Agent outputs in worktrees → `/clear` | Worktree branches + plan file |
+
+**Why save+clear beats /compact:** `/compact` compresses but loses details. `/clear` + reading a clean plan file = 100% relevant context, 0% noise. Each phase starts fresh = maximum model performance.
+
+**Emergency (context at 70-80% mid-phase):** Save progress to plan file → `/clear` → read plan file → continue.
+
+**Use `/compact` only:** within a single long-running phase (e.g., P1 reading many files), or in SCOUT mode (too short for /clear).
 
 **Subagent context:** Each dispatched agent runs in its OWN context window + its own worktree. Their verbose output stays there — only summaries return to your main conversation.
 
@@ -356,7 +414,7 @@ Context is your #1 resource. The official Claude Code docs say: "performance deg
 | Ask >5 questions in P2 | Diminishing returns | 3-5 targeted, research-informed |
 | FULL mode for typo fix | Overkill | Auto-detect picks SCOUT |
 | Skip user confirmation before dispatch | Agents modify your code | Always confirm at P5 gate |
-| Let context fill up | Performance degrades | `/compact` between phases |
+| Let context fill up | Performance degrades | Save to plan file + `/clear` between phases |
 | Dispatch without worktree isolation | File conflicts | Always use `isolation: worktree` |
 
 ---
