@@ -1,13 +1,13 @@
-# aqua-combo
+# aqua-combo v2
 
-**Plan long, build once.** A research-to-execution pipeline skill for [Claude Code](https://docs.anthropic.com/en/docs/claude-code).
+**Plan deeply, build once.** A research-to-execution pipeline skill for [Claude Code](https://code.claude.com).
 
-[![Claude Code Skill](https://img.shields.io/badge/Claude_Code-Skill-blueviolet)](https://docs.anthropic.com/en/docs/claude-code)
+[![Claude Code Skill](https://img.shields.io/badge/Claude_Code-Skill-blueviolet)](https://code.claude.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-aqua-combo replaces the manual cycle of research, debate, architecture review, and implementation with a single command. It runs a 10-phase pipeline that researches your problem, stress-tests the approach through adversarial debate, designs the architecture, crafts context-rich prompts for sub-agents, simulates execution, and dispatches the work -- all automatically.
+aqua-combo orchestrates Claude Code's native features — Plan Mode, subagents with worktree isolation, adversarial debate, and smart clarification — into a single pipeline. It forces you to research before coding, debate before committing, and verify before shipping.
 
 ```
 /aqua-combo "build a notification system with WebSocket + queue"
@@ -15,152 +15,104 @@ aqua-combo replaces the manual cycle of research, debate, architecture review, a
 
 ---
 
-## Pipeline Overview
+## What it does
 
-```
-+---------------------------------------------------------+
-|                     /aqua-combo                         |
-|                                                         |
-|  +---------+   +----------+   +----------+              |
-|  | SCOUT   |   | STANDARD |   | FULL     |              |
-|  | MODE    |   | MODE     |   | MODE     |              |
-|  | <10 min |   | 10-30 min|   | 30+ min  |              |
-|  +----+----+   +----+-----+   +----+-----+              |
-|       |              |              |                    |
-|  P1(Q)->P8(mini) P1->P2->P5->  ALL P1-P10              |
-|                  P6->P7L->P8->P10                       |
-|                                                         |
-|  Phases:                                                |
-|  P1 Research -> P2 Clarification -> P3 Adversarial      |
-|  -> P4 Cross-Validation -> P5 Architecture -> P6 Prompts|
-|  -> P7 Simulation -> P8 Final Plan -> P9 Learning       |
-|  -> P10 Auto-Dispatch                                   |
-+---------------------------------------------------------+
-```
+| Phase | Name | What happens |
+|-------|------|-------------|
+| **P1** | Research | Deep multi-source research on the problem |
+| **P2** | Clarify | 3-5 targeted questions you didn't think to ask |
+| **P3** | Debate | Adversarial stress-test via Gemini or web skepticism |
+| **P4** | Architect | Design simplest architecture using Plan Mode |
+| **P5** | Dispatch | Launch subagents in isolated worktrees with crafted prompts |
+| **P6** | Review | Code review + security audit via specialized subagents |
+
+Five `ultrathink` checkpoints (Claude Code's high-effort reasoning keyword) ensure deep analysis at critical gates.
 
 ---
 
 ## Modes
 
-| Mode | Phases | When to use |
-|------|--------|-------------|
-| **SCOUT** | P1 (quick) -> P8 (mini) | Simple task, known pattern, <50 LOC |
-| **STANDARD** | P1 -> P2 -> P5 -> P6 -> P7(lite) -> P8 -> P10 | New feature, moderate complexity |
-| **FULL** | All P1 through P10 | Architecture decisions, high stakes, multi-agent, production |
+| Mode | Phases | When |
+|------|--------|------|
+| **SCOUT** | P1 (quick) + plan | Simple task, known pattern, <50 LOC |
+| **STANDARD** | P1 → P2 → P4 → P5 | New feature, moderate complexity |
+| **FULL** | All P1 through P6 | Architecture, high stakes, production |
 
-The mode is auto-detected based on complexity, but you can override it:
-
-```
-/aqua-combo --mode full "redesign the data pipeline architecture"
-/aqua-combo --mode scout "add retry logic to API calls"
-```
+Override: `/aqua-combo --mode full "redesign the auth system"`
 
 ---
 
-## The 10 Phases
+## How it uses Claude Code
 
-| Phase | Name | What it does |
-|-------|------|-------------|
-| **P1** | Research | Deep multi-source research on the problem space |
-| **P2** | Clarification | 3-5 targeted questions to align research with your actual needs |
-| **P3** | Adversarial Debate | Stress-test the approach (Gemini devil's advocate or web skepticism) |
-| **P4** | Cross-Validation | Catch contradictions between research, user input, and debate |
-| **P5** | Architecture | Design the simplest architecture that satisfies all constraints |
-| **P6** | Prompt Engineering | Craft context-rich prompts for each sub-agent task |
-| **P7** | Simulation | Mental dry-run: failure modes, time estimates, resource budget |
-| **P8** | Final Plan | Single actionable document combining all phases |
-| **P9** | Learning Loop | Capture what worked for future runs |
-| **P10** | Auto-Dispatch | Launch sub-agents with two-stage review and conflict detection |
+aqua-combo builds on Claude Code's native capabilities:
 
-Each phase builds on the previous. Six mandatory ULTRATHINK checkpoints ensure deep reasoning at critical gates.
+- **Plan Mode** (P4) — `Shift+Tab` for read-only exploration and planning. `Ctrl+G` to edit plans in your editor.
+- **Subagents** (P5-P6) — dispatched with `isolation: worktree` so each agent works in its own branch. No file conflicts, clean rollback.
+- **`ultrathink` keyword** — triggers high-effort reasoning at 5 decision gates (Opus 4.6 / Sonnet 4.6).
+- **Context management** — `/compact` between phases to prevent context window degradation.
+- **Skill routing** — automatically uses installed skills (`/code-review`, `/security-review`, `/tdd`) when available.
 
-> **What is ULTRATHINK?** A structured deep-reasoning step where the AI pauses to think thoroughly before proceeding. Each ULTRATHINK checkpoint produces a written output — not just "I thought about it" but a concrete synthesis, decision, or analysis that subsequent phases build on.
+---
+
+## Important notes
+
+**Agent dispatch (P5):** Before launching agents, the skill presents a confirmation gate listing all tasks. Agents run in default permission mode unless you explicitly opt in to auto-accept.
+
+**Worktree isolation:** Each dispatched agent gets its own copy of the repo via git worktree. If an agent's work fails review, `git worktree remove` discards it cleanly. No mess in your working directory.
+
+**Web research safety:** P1 research may pull web content. The skill summarizes and paraphrases rather than copy-pasting raw content into agent prompts, reducing prompt injection risk.
 
 ---
 
 ## Installation
 
 ```bash
-# Clone the repo
 git clone https://github.com/prezis/aqua-combo.git
-
-# Copy to your Claude Code skills directory
-cp -r aqua-combo ~/.claude/skills/
+cp -r aqua-combo/SKILL.md aqua-combo/references ~/.claude/skills/aqua-combo/
 ```
 
 Or manually:
-
 ```bash
 mkdir -p ~/.claude/skills/aqua-combo/references
-# Copy SKILL.md and the references/ folder into the above directory
+# Copy SKILL.md and references/ into the above directory
+```
+
+Optional — install the provided subagent definitions for better review:
+```bash
+mkdir -p .claude/agents
+cp aqua-combo/references/subagent_definitions.md .claude/agents/README.md
+# Then copy individual agent definitions from that file into .claude/agents/
 ```
 
 ---
 
-## Usage
-
-Once installed, invoke it in Claude Code:
-
-```
-/aqua-combo "build a notification system with WebSocket + queue"
-```
-
-It also auto-activates on phrases like:
-- "plan long build once"
-- "research and plan"
-- "full pipeline"
-- "before we code"
-- "design the approach"
-- "how should we build this"
-
----
-
-## What's Inside
+## What's inside
 
 ```
 aqua-combo/
-  SKILL.md                              # Main skill definition (10 phases + iron laws)
+  SKILL.md                              # Main skill (6 phases + iron laws)
   references/
-    architecture_checklist.md            # Full checklist for P5 architecture review
-    prompt_templates.md                  # Domain-specific templates for sub-agent prompts
-    simulation_protocol.md               # Resource limits, timing, failure mode catalog
+    subagent_definitions.md             # Ready-to-use .claude/agents/ definitions
+    prompt_templates.md                 # Domain-specific templates for agent prompts
+    context_protocol.md                 # Context management, resource budgets, failure modes
 ```
-
----
-
-## Key Principles
-
-- **No building without the full pipeline** -- if mode is FULL, all phases run, no shortcuts.
-- **No dispatch without simulation** -- P7 must complete before P10 launches agents.
-- **No generic prompts** -- every sub-agent prompt includes specific context from P1-P5.
-- **Simplest architecture wins** -- complexity is not a feature.
-- **Two-stage review** -- every agent output is reviewed for spec compliance, then code quality.
-
----
-
-## Important Notes
-
-**Agent dispatch (P10):** In STANDARD and FULL modes, the pipeline dispatches sub-agents that create and modify files in your project. Before dispatch, the skill presents a confirmation gate listing all tasks and asking for your approval. Agents run in default permission mode unless you explicitly opt in to `bypassPermissions` at the confirmation gate.
-
-**Skill integration:** P6 and P10 automatically leverage installed Claude Code skills when available (e.g., `/code-review`, `/security-review`, `/tdd`). If no specialized skills are installed, it falls back to generic reviewer agents using the templates in `references/prompt_templates.md`.
-
-**Web research safety:** P1 research may pull content from web sources. The skill includes guidance to summarize and paraphrase web content rather than copy-pasting raw text into agent prompts, reducing prompt injection risk.
 
 ---
 
 ## Prerequisites
 
-- **[Claude Code](https://docs.anthropic.com/en/docs/claude-code)** -- the skill runs inside Claude Code's skill system.
-- **Gemini CLI** (optional) -- used in P3 for adversarial debate. If unavailable, the skill falls back to web search for community skepticism.
+- **[Claude Code](https://code.claude.com)** — the skill runs inside Claude Code's skill system
+- **Gemini CLI** (optional) — used in P3 for adversarial debate. Falls back to web search if unavailable.
 
 ---
 
 ## Contributing
 
-Found a way to improve the pipeline? Open an issue or PR. Ideas welcome:
-- New prompt templates for specific domains
-- Better simulation heuristics
+Found a way to improve the pipeline? Open an issue or PR. Ideas:
+- New subagent definitions for specific domains
+- Better prompt templates
 - Additional adversarial debate strategies
+- Context management improvements
 
 ---
 
@@ -170,4 +122,4 @@ Found a way to improve the pipeline? Open an issue or PR. Ideas welcome:
 
 ---
 
-Built by the community. Plan long, build once.
+Built by the community. Plan deeply, build once.
