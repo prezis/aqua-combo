@@ -26,7 +26,7 @@ aqua-combo orchestrates Claude Code's native features — Plan Mode, subagents w
 | **P5** | Dispatch | Launch subagents in isolated worktrees with crafted prompts |
 | **P6** | Review | Code review + security audit via specialized subagents |
 
-Five `ultrathink` checkpoints (Claude Code's high-effort reasoning keyword) ensure deep analysis at critical gates.
+`ultrathink` checkpoints (Claude Code's high-effort reasoning keyword) at each decision gate ensure deep analysis. The number of gates depends on the selected mode — FULL mode uses all five numbered gates plus mode selection.
 
 ---
 

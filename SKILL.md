@@ -157,7 +157,7 @@ Play DEVIL'S ADVOCATE:
 1. Why will this approach FAIL?
 2. What are we NOT seeing?
 3. What alternative would YOU choose and why?
-4. What's the #1 risk we're underestimating?" | gemini -m gemini-2.5-pro -p "" -o text
+4. What's the #1 risk we're underestimating?" | gemini -m gemini-2.5-pro
 ```
 
 > **Note:** The Gemini path sends your research context to Google's API. Do not include
@@ -228,7 +228,7 @@ If `/octo-plan` or similar multi-AI planning skill is installed, invoke it:
 
 ### Plan output:
 
-Write plan to `aqua-combo-plan-{topic-slug}.md`. Use `Ctrl+G` to open in editor for user review.
+Write plan to `aqua-combo-plan-{topic-slug}.md`. Review it before proceeding (open in your editor, or ask Claude to display it).
 
 ```markdown
 # Plan: [Topic]
@@ -287,7 +287,7 @@ Agent tool call:
 | Testing | `/tdd` or `tdd-guide` agent | generic test writer |
 | Architecture review | `Plan` agent in plan mode | — |
 | Debugging | `/octo-debug` or `debugger` agent | — |
-| Research subtask | `Explore` agent (built-in, uses Haiku) | — |
+| Research subtask | `Explore` subagent (built-in, fast, read-only) | generic `general-purpose` agent |
 | Data pipeline | `pipeline-builder` agent | see `references/subagent_definitions.md` |
 
 **To discover installed skills:** check `/` menu or ask "what skills are available?"
@@ -359,7 +359,7 @@ If `/octo-staged-review` is installed, invoke it — it runs two-stage review (s
 
 **ultrathink gate #5:** "Do outputs collectively satisfy the plan? Any gaps?"
 
-### Self-assessment:
+### Self-assessment (retrospective for your own learning):
 
 | Question | Score 0-10 |
 |----------|------------|
@@ -368,6 +368,8 @@ If `/octo-staged-review` is installed, invoke it — it runs two-stage review (s
 | Were agent prompts better than generic? | |
 | Did worktree isolation prevent conflicts? | |
 | Overall pipeline value-add? | |
+
+This is a learning tool, not a gate. Low scores mean: consider whether SCOUT mode was sufficient, or whether a phase needs improvement for next time.
 
 ### Merge & Cleanup
 
