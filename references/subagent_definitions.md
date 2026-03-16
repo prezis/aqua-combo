@@ -195,15 +195,25 @@ Or, if the user doesn't have these installed, the pipeline falls back to:
 
 ## Installation
 
-Copy any definition you need:
+The agent definitions above are embedded as code blocks, not separate files. To install one:
 
-```bash
-# Project-level (shared with team via git)
-mkdir -p .claude/agents
-cp code-reviewer.md .claude/agents/
+1. Create the agents directory if it doesn't exist:
+   ```bash
+   # Project-level (shared with team via git)
+   mkdir -p .claude/agents
 
-# User-level (available in all your projects)
-cp code-reviewer.md ~/.claude/agents/
-```
+   # Or user-level (available in all your projects)
+   mkdir -p ~/.claude/agents
+   ```
 
-Subagents are loaded at session start. Restart Claude Code or run `/agents` to load new ones.
+2. Copy the contents of the code block (everything between the triple backticks) into a new file:
+   ```bash
+   # Example: install the code reviewer
+   # Copy the markdown content from the "Code Reviewer" section above
+   # and paste it into this file:
+   nano .claude/agents/code-reviewer.md
+   ```
+
+3. Restart Claude Code or run `/agents` to load the new subagent.
+
+Alternatively, ask Claude: "Create a code-reviewer subagent in .claude/agents/" and paste the definition from above.

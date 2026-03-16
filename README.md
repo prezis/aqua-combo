@@ -35,8 +35,8 @@ Five `ultrathink` checkpoints (Claude Code's high-effort reasoning keyword) ensu
 | Mode | Phases | When |
 |------|--------|------|
 | **SCOUT** | P1 (quick) + plan | Simple task, known pattern, <50 LOC |
-| **STANDARD** | P1 → P2 → P4 → P5 | New feature, moderate complexity |
-| **FULL** | All P1 through P6 | Architecture, high stakes, production |
+| **STANDARD** | P1 → P2 → P4 → P5 → P6 | New feature, moderate complexity |
+| **FULL** | All P1 through P6 | Architecture, high stakes, production, multi-agent |
 
 Override: `/aqua-combo --mode full "redesign the auth system"`
 
@@ -122,4 +122,4 @@ Found a way to improve the pipeline? Open an issue or PR. Ideas:
 
 ---
 
-Built by the community. Plan deeply, build once.
+Plan deeply, build once.
