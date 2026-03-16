@@ -72,8 +72,20 @@ aqua-combo works standalone but is SIGNIFICANTLY better with these skills instal
 | `/verification-loop` | P6 Review (gates) | Build/test/coverage/security gates | Manual test run |
 | `/superpowers--verification-before-completion` | P6 Review (discipline) | Evidence-before-claims — no false completion | Self-assessment only |
 
+### How to check if a skill exists:
+
+Skills in Claude Code live in **multiple locations** — check ALL of them before declaring "not installed":
+- `~/.claude/skills/` — user-level skills
+- `~/.claude/commands/` — user-level commands (invoke via `/command-name`)
+- `~/.claude/agents/` — user-level subagents
+- `~/.claude/plugins/` — installed plugins (may bundle skills, commands, agents)
+- `.claude/skills/`, `.claude/commands/`, `.claude/agents/` — project-level
+- The `/` menu in Claude Code shows all available skills and commands
+
+**Do NOT assume a skill doesn't exist because it's missing from one location.** Check `/` menu first.
+
 ### Auto-adaptation:
-- If a recommended skill is installed → use it (no user prompt needed)
+- If a recommended skill is installed (in ANY location) → use it (no user prompt needed)
 - If not installed → use fallback (documented in each phase)
 - **Never block the pipeline** because a skill is missing — always have a fallback path
 
