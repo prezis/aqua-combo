@@ -58,17 +58,17 @@ aqua-combo works standalone but is SIGNIFICANTLY better with these skills instal
 
 | Skill | Used in | What it adds | Without it |
 |-------|---------|-------------|------------|
+| `/aqua-search` | P1 Research | Deep research with Czajka formalization + CoVe | Basic WebSearch fallback |
+| `/octo-define` | P2 Clarify (STANDARD) | Multi-AI consensus on requirements + constraints | Native "interview me" pattern |
+| `/octo--skill-thought-partner` | P2 Clarify (FULL) | Discovers hidden assumptions before scoping | Skip straight to octo-define |
 | `/octo-debate` | P3 Debate | 3-way AI debate (Claude+Gemini+Codex) | Single Gemini or web fallback |
-| `/octo-plan` | P4 Architect | Multi-AI consensus planning | Single-AI Plan Mode |
-| `/octo-deliver` | P6 Review | Structured multi-AI QA pipeline | Manual review checklist |
-| `/aqua-search` | P1 Research | Deep research with CoVe + reranking | Basic WebSearch fallback |
-| `/octo-define` | P2 Clarify | Multi-AI consensus on problem definition | Single-AI clarification |
-| `/octo--octopus-architecture` | P4 Architect | Architecture-specific multi-AI design | `/octo-plan` or native Plan Mode |
-| `/superpowers--subagent-driven-development` | P5 Dispatch | Purpose-built plan execution with agents | Manual dispatch |
-| `/superpowers--dispatching-parallel-agents` | P5 Dispatch | Parallel agent dispatch with isolation | Sequential dispatch |
-| `/superpowers--verification-before-completion` | P6 Review | Evidence-based completion verification | Self-assessment only |
-| `/code-review` | P6 Review | Expert code review | Generic reviewer agent |
-| `/security-review` | P6 Review | Security vulnerability scan | Generic security agent |
+| `/octo--octopus-architecture` | P4 Architect (design) | Multi-AI architecture consensus | Native Plan Mode |
+| `/superpowers--writing-plans` | P4 Architect (tasks) | Converts design into TDD-first bite-sized tasks | Inline task breakdown |
+| `/superpowers--dispatching-parallel-agents` | P5 Dispatch (parallel) | True parallel dispatch for independent tasks | Sequential manual dispatch |
+| `/superpowers--subagent-driven-development` | P5 Dispatch (sequential) | 2-stage review per task (spec + quality) | Manual dispatch + review |
+| `/octo--skill-code-review` | P6 Review (code) | Multi-AI code review + stub detection | Generic reviewer agent |
+| `/verification-loop` | P6 Review (gates) | Build/test/coverage/security gates | Manual test run |
+| `/superpowers--verification-before-completion` | P6 Review (discipline) | Evidence-before-claims — no false completion | Self-assessment only |
 
 ### Auto-adaptation:
 - If a recommended skill is installed → use it (no user prompt needed)
@@ -119,9 +119,11 @@ Delegate to `/aqua-search` if available. Otherwise:
 
 ## Phase 2: CLARIFY (user interaction)
 
-If `/octo-define` is installed, invoke it — multi-AI consensus on problem scoping produces sharper definitions than single-AI. Pass P1 research findings as context.
+**FULL mode:** If `/octo--skill-thought-partner` is installed, invoke it FIRST — it discovers hidden assumptions, paradoxes, and things the user hasn't thought of. Then pass its output to `/octo-define` for multi-AI consensus on requirements.
 
-**Fallback (no octo-define):** the "interview me" pattern from Claude Code best practices. Don't just ask what the user wants — ask what they HAVEN'T thought of.
+**STANDARD mode:** If `/octo-define` is installed, invoke it directly — multi-AI consensus on problem scoping.
+
+**Fallback (neither installed):** the "interview me" pattern below. Don't just ask what the user wants — ask what they HAVEN'T thought of.
 
 1. Present research summary (3-5 bullets, not a wall)
 2. Ask **3-5 targeted questions** — SMART, informed by P1 findings:
@@ -210,11 +212,9 @@ If CONFIDENCE = LOW → return to P2 with follow-up questions (max 2 loops, then
 
 ### Preferred: delegate to installed planning skill
 
-If `/octo--octopus-architecture` is installed, invoke it — it's architecture-specific multi-AI design (stronger than generic planning for system design decisions).
+If `/octo--octopus-architecture` is installed, invoke it for **design** — multi-AI consensus on architecture (patterns, API contracts, scalability). Pass: P1 findings + P2 problem + P3 debate conclusions.
 
-Otherwise if `/octo-plan` is installed, invoke it — multi-AI consensus planning:
-- Pass: research findings (P1) + refined problem (P2) + debate conclusions (P3)
-- Let the planning skill produce the architecture and trade-off analysis
+Then if `/superpowers--writing-plans` is installed, invoke it to **convert the design into TDD-first tasks** — bite-sized steps with exact file paths, test commands, and expected outputs.
 
 ### Fallback: native Plan Mode
 
@@ -296,8 +296,8 @@ Agent tool call:
 | Task Type | Best Agent/Skill | Fallback |
 |-----------|-----------------|----------|
 | Implementation | `general-purpose` agent | — |
-| Code review | `/code-review` or `code-reviewer` agent | see `references/subagent_definitions.md` |
-| Security audit | `/security-review` or `security-reviewer` agent | see `references/subagent_definitions.md` |
+| Code review | `/octo--skill-code-review` (multi-AI) | `code-reviewer` agent from `references/subagent_definitions.md` |
+| Security audit | `/octo--skill-code-review` covers security perspective | `security-reviewer` agent from `references/subagent_definitions.md` |
 | Testing | `/tdd` or `tdd-guide` agent | generic test writer |
 | Architecture review | `Plan` agent in plan mode | — |
 | Debugging | `/octo-debug` or `debugger` agent | — |
@@ -351,11 +351,11 @@ After all agents complete:
 
 ### Preferred: delegate to installed delivery/review skill
 
-If `/octo-deliver` is installed, invoke it — it provides multi-AI quality assurance with structured gates. Pass the plan file and list of changed files.
+If `/octo--skill-code-review` is installed, invoke it — multi-AI code review (Claude+Codex+Gemini) with stub detection and blocking/non-blocking issue classification.
 
-If `/octo-staged-review` is installed, invoke it — it runs two-stage review (spec compliance → code quality) automatically.
+Then if `/verification-loop` is installed, invoke it — automated build/test/coverage/security gates (80% coverage threshold, secrets check, diff review).
 
-If `/superpowers--verification-before-completion` is installed, invoke it — it enforces evidence-based completion: run verification commands and confirm output BEFORE claiming success.
+If `/superpowers--verification-before-completion` is installed, invoke it as final discipline gate — enforces evidence-based completion: run verification commands and confirm output BEFORE claiming success.
 
 ### Fallback: manual review checklist
 
