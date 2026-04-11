@@ -1,0 +1,60 @@
+{
+  "gpu": {
+    "vendor": "nvidia",
+    "name": "RTX 4070 Ti",
+    "vram_total_mb": 16000,
+    "vram_free_mb": 14000
+  },
+  "tier": "enthusiast",
+  "ollama": {
+    "available": true,
+    "models_installed": [
+      "qwen2.5:14b",
+      "qwen3:4b",
+      "nomic-embed-text"
+    ]
+  },
+  "recommended_models": [
+    {
+      "name": "qwen2.5:14b",
+      "role": "reasoning",
+      "vram_mb": 9500,
+      "keep_alive": "5m",
+      "good_for": [
+        "code_review",
+        "analysis"
+      ]
+    },
+    {
+      "name": "qwen3:4b",
+      "role": "fast",
+      "vram_mb": 2500,
+      "keep_alive": "24h",
+      "good_for": [
+        "classification",
+        "routing"
+      ]
+    },
+    {
+      "name": "nomic-embed-text",
+      "role": "embedding",
+      "vram_mb": 300,
+      "keep_alive": "24h",
+      "good_for": [
+        "semantic_search"
+      ]
+    }
+  ],
+  "ollama_settings": {
+    "OLLAMA_KV_CACHE_TYPE": "q8_0",
+    "OLLAMA_FLASH_ATTENTION": "1",
+    "OLLAMA_KEEP_ALIVE": "2m"
+  },
+  "apis": {
+    "anthropic": true
+  },
+  "notes": [
+    "Good local capability.",
+    "API recommended for complex architecture tasks."
+  ]
+}

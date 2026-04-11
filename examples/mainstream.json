@@ -1,0 +1,50 @@
+{
+  "gpu": {
+    "vendor": "nvidia",
+    "name": "RTX 3060",
+    "vram_total_mb": 8000,
+    "vram_free_mb": 7000
+  },
+  "tier": "mainstream",
+  "ollama": {
+    "available": true,
+    "models_installed": [
+      "qwen3:8b",
+      "nomic-embed-text"
+    ]
+  },
+  "recommended_models": [
+    {
+      "name": "qwen3:8b",
+      "role": "reasoning",
+      "vram_mb": 5500,
+      "keep_alive": "5m",
+      "good_for": [
+        "code_review",
+        "analysis"
+      ]
+    },
+    {
+      "name": "nomic-embed-text",
+      "role": "embedding",
+      "vram_mb": 300,
+      "keep_alive": "24h",
+      "good_for": [
+        "semantic_search"
+      ]
+    }
+  ],
+  "ollama_settings": {
+    "OLLAMA_KV_CACHE_TYPE": "q8_0",
+    "OLLAMA_FLASH_ATTENTION": "1",
+    "OLLAMA_KEEP_ALIVE": "1m"
+  },
+  "apis": {
+    "anthropic": true,
+    "openai": true
+  },
+  "notes": [
+    "Solid 8B model covers most tasks.",
+    "API needed for hard reasoning."
+  ]
+}

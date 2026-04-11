@@ -1,0 +1,75 @@
+{
+  "gpu": {
+    "vendor": "nvidia",
+    "name": "RTX 5090",
+    "vram_total_mb": 32000,
+    "vram_free_mb": 30000
+  },
+  "tier": "power",
+  "ollama": {
+    "available": true,
+    "models_installed": [
+      "qwen3.5:27b",
+      "hermes3:8b",
+      "qwen3:4b",
+      "nomic-embed-text"
+    ]
+  },
+  "recommended_models": [
+    {
+      "name": "qwen3.5:27b",
+      "role": "reasoning",
+      "vram_mb": 17000,
+      "keep_alive": "5m",
+      "good_for": [
+        "code_review",
+        "analysis",
+        "architecture"
+      ]
+    },
+    {
+      "name": "hermes3:8b",
+      "role": "structured",
+      "vram_mb": 5000,
+      "keep_alive": "5m",
+      "good_for": [
+        "json",
+        "function_calling"
+      ]
+    },
+    {
+      "name": "qwen3:4b",
+      "role": "fast",
+      "vram_mb": 2500,
+      "keep_alive": "24h",
+      "good_for": [
+        "classification",
+        "routing",
+        "simple_qa"
+      ]
+    },
+    {
+      "name": "nomic-embed-text",
+      "role": "embedding",
+      "vram_mb": 300,
+      "keep_alive": "24h",
+      "good_for": [
+        "semantic_search",
+        "similarity"
+      ]
+    }
+  ],
+  "ollama_settings": {
+    "OLLAMA_KV_CACHE_TYPE": "q8_0",
+    "OLLAMA_FLASH_ATTENTION": "1",
+    "OLLAMA_NUM_PARALLEL": "4"
+  },
+  "apis": {
+    "anthropic": true,
+    "gemini": true
+  },
+  "notes": [
+    "Full local stack. All phases can use local GPU.",
+    "External APIs optional."
+  ]
+}

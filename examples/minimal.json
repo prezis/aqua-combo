@@ -1,0 +1,47 @@
+{
+  "gpu": {
+    "vendor": "amd",
+    "name": "AMD APU",
+    "vram_total_mb": 2500,
+    "vram_free_mb": 2000
+  },
+  "tier": "minimal",
+  "ollama": {
+    "available": true,
+    "models_installed": [
+      "qwen3:0.6b",
+      "nomic-embed-text"
+    ]
+  },
+  "recommended_models": [
+    {
+      "name": "qwen3:0.6b",
+      "role": "fast",
+      "vram_mb": 800,
+      "keep_alive": "30s",
+      "good_for": [
+        "classification",
+        "routing"
+      ]
+    },
+    {
+      "name": "nomic-embed-text",
+      "role": "embedding",
+      "vram_mb": 300,
+      "keep_alive": "24h",
+      "good_for": [
+        "semantic_search"
+      ]
+    }
+  ],
+  "ollama_settings": {
+    "OLLAMA_KEEP_ALIVE": "30s"
+  },
+  "apis": {
+    "anthropic": true
+  },
+  "notes": [
+    "Embeddings + tiny classifier only.",
+    "All generation needs external API."
+  ]
+}

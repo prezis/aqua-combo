@@ -1,0 +1,31 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pytest
+      - run: python -m pytest tests/ -v
+  
+  sync-platforms:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync SKILL.md to all platforms
+        run: |
+          for dir in .cursor .codex .gemini .windsurf; do
+            cp skills/aqua-combo/SKILL.md $dir/SKILL.md
+          done
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "sync: SKILL.md to all platforms"
+          git push || true

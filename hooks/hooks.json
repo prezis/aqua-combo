@@ -1,0 +1,12 @@
+{
+  "SessionStart": [
+    {
+      "hooks": [
+        {
+          "type": "prompt",
+          "prompt": "aqua-combo plugin is installed. Read ~/.aqua-combo/capabilities.json for GPU tier and available models. If the file doesn't exist, run: python3 <plugin_root>/scripts/gpu_detect.py --save"
+        }
+      ]
+    }
+  ]
+}

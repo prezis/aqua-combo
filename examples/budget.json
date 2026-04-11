@@ -1,0 +1,50 @@
+{
+  "gpu": {
+    "vendor": "nvidia",
+    "name": "GTX 1650",
+    "vram_total_mb": 4500,
+    "vram_free_mb": 4000
+  },
+  "tier": "budget",
+  "ollama": {
+    "available": true,
+    "models_installed": [
+      "qwen3:4b",
+      "nomic-embed-text"
+    ]
+  },
+  "recommended_models": [
+    {
+      "name": "qwen3:4b",
+      "role": "fast",
+      "vram_mb": 2500,
+      "keep_alive": "30s",
+      "good_for": [
+        "classification",
+        "extraction",
+        "simple_review"
+      ]
+    },
+    {
+      "name": "nomic-embed-text",
+      "role": "embedding",
+      "vram_mb": 300,
+      "keep_alive": "24h",
+      "good_for": [
+        "semantic_search"
+      ]
+    }
+  ],
+  "ollama_settings": {
+    "OLLAMA_KV_CACHE_TYPE": "q4_0",
+    "OLLAMA_FLASH_ATTENTION": "1",
+    "OLLAMA_KEEP_ALIVE": "30s"
+  },
+  "apis": {
+    "anthropic": true
+  },
+  "notes": [
+    "4B model handles classification and extraction.",
+    "API essential for reasoning."
+  ]
+}

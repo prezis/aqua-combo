@@ -1,0 +1,24 @@
+{
+  "gpu": {
+    "vendor": "none",
+    "name": "No GPU",
+    "vram_total_mb": 0,
+    "vram_free_mb": 0
+  },
+  "tier": "api_only",
+  "ollama": {
+    "available": false,
+    "models_installed": []
+  },
+  "recommended_models": [],
+  "ollama_settings": {},
+  "apis": {
+    "anthropic": true,
+    "openai": true
+  },
+  "notes": [
+    "No local GPU or Ollama detected.",
+    "All tasks route to Claude/OpenAI/Gemini API.",
+    "Install Ollama (ollama.com) for local embeddings even on CPU."
+  ]
+}
