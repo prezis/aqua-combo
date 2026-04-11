@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "aqua-pipeline",
+  "description": "Research-to-execution pipeline with optional GPU acceleration",
+  "version": "1.0.0",
+  "owner": {
+    "name": "prezis",
+    "url": "https://github.com/prezis"
+  },
+  "plugins": [
+    {
+      "name": "aqua-combo",
+      "description": "6-phase pipeline: Research → Clarify → Debate → Architect → Dispatch → Review. Optional local GPU routing via DiffServ classification.",
+      "version": "4.0.0",
+      "author": { "name": "prezis", "url": "https://github.com/prezis" },
+      "source": "./",
+      "category": "development",
+      "homepage": "https://github.com/prezis/aqua-combo",
+      "tags": ["planning", "research", "execution", "gpu-first", "cost-optimization"],
+      "keywords": ["pipeline", "orchestration", "plan-mode", "local-inference", "diffserv"],
+      "license": "MIT"
+    }
+  ]
+}
