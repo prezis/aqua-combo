@@ -19,7 +19,7 @@ version: 4.0.0
 
 If `~/.aqua-combo/capabilities.json` does not exist, run setup first:
 ```
-python3 <plugin_root>/scripts/gpu-detect.py --save
+python3 <plugin_root>/scripts/gpu_detect.py --save
 ```
 This detects your GPU, available models, and API keys. All GPU features are OPTIONAL — the pipeline works without any local GPU.
 
